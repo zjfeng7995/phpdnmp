@@ -1,0 +1,56 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:1.15.7-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./wwwroot:/var/www/html/:rw
+      - ./nginx/conf.d:/etc/nginx/conf.d/:rw
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/log:/var/log/nginx/:rw
+    restart: always
+    networks:
+      - default
+
+  php72:
+    build:
+      context: .
+      args:
+        PHP_VERSION: 7.2.13
+    volumes:
+      - ./wwwroot:/var/www/html/:rw
+      - ./php/php72/php.ini:/usr/local/etc/php/php.ini-development:ro
+      - ./php/php72/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+
+  mysql:
+    image: mysql:5.7.25
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./mysql:/var/lib/mysql/:rw
+    restart: always
+    networks:
+      - default
+    environment:
+      MYSQL_ROOT_PASSWORD: "phpstudy123456"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8080:80"
+    networks:
+      - default
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+
+networks:
+  default: 
