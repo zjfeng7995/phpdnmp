@@ -40,7 +40,7 @@ services:
     networks:
       - default
     environment:
-      MYSQL_ROOT_PASSWORD: "phpstudy123456"
+      MYSQL_ROOT_PASSWORD: "phpdnmp"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
